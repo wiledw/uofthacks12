@@ -1,29 +1,102 @@
 "use client";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function Index() {
+const smoothTransition = {
+  type: "tween",
+  ease: "easeInOut",
+  duration: 0.7
+}
+
+export default function Home() {
   const { user, error, isLoading } = useUser();
+  const [stage, setStage] = useState(0);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/survey');
+      return;
+    }
+
+    const timer1 = setTimeout(() => setStage(1), 2000)
+    const timer2 = setTimeout(() => setStage(2), 4000)
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
+  }, [user, router]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
-  const handleLogout = () => {
-    window.location.href = `/api/auth/logout`;
-  };
+  // const handleLogout = () => {
+  //   window.location.href = `/api/auth/logout`;
+  // };
 
-  if (user) {
-    return (
-      <div>
-        Welcome {user.name}! {user.email}
-        <button onClick={handleLogout}>Logout</button>
-        {user.picture && (
-          <Image src={user.picture} width={40} height={40} alt="" />
-        )}
-      </div>
-    );
-  }
+  // if (user) {
+  //   return (
+  //     <div>
+  //       Welcome {user.name}! {user.email}
+  //       <button onClick={handleLogout}>Logout</button>
+  //       {user.picture && (
+  //         <Image src={user.picture} width={40} height={40} alt="" />
+  //       )}
+  //     </div>
+  //   );
+  // }
 
-  return <Link href="/api/auth/login?prompt=login">Login</Link>;
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
+      <motion.div 
+        layout
+        transition={smoothTransition}
+        className="flex flex-col items-center"
+      >
+        <AnimatePresence mode="wait">
+          {stage === 0 && (
+            <motion.h1
+              key="hello"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={smoothTransition}
+              className="text-5xl font-bold mb-8"
+            >
+              Hello World
+            </motion.h1>
+          )}
+          {stage >= 1 && (
+            <motion.h1
+              key="perceptr"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                ...smoothTransition,
+                delay: stage === 1 ? 0.3 : 0
+              }}
+              className="text-6xl font-bold mb-8"
+            >
+              <div className='flex flex-col items-center gap-8'>
+                Perceptr
+                <Link href="/api/auth/login?prompt=login">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="text-lg px-6 py-3 rounded-full bg-white text-black hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Let&apos;s get started
+                  </Button>
+                </Link>
+              </div>
+            </motion.h1>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
+  );
 }
