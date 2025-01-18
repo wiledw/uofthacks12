@@ -54,7 +54,18 @@ const ScatterChartComponent = () => {
 
   return (
     <div className="relative bg-transparent p-4">
+        <button
+            onClick={handleRefresh}
+            className="absolute top-4 right-4 z-10 p-2 rounded-full
+            bg-black border border-cyan-400/30 text-cyan-400 
+            hover:bg-cyan-950/50 hover:text-cyan-300 
+            transition-all duration-200 shadow-lg"
+            >
+                <RotateCw className="w-5 h-5" />
+        </button>
+
       <Plot
+        key={key}
         data={[
           {
             x: data.map((d) => d.x),
@@ -105,7 +116,7 @@ const ScatterChartComponent = () => {
           showlegend: false,
           margin: {
             l: 40,
-            r: 40,
+            r: 60,
             t: 60,
             b: 40,
           },
