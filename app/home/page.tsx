@@ -5,7 +5,7 @@ import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import ScatterChartComponent from '@/app/components/scatter'
+import ClientScatter from '@/app/components/clientScatter'
 
 export default function HomePage() {
   const router = useRouter();
@@ -72,7 +72,7 @@ export default function HomePage() {
         {/* Graph Section */}
         <div className="rounded-2xl overflow-hidden border-2 border-cyan-400/30 shadow-xl 
         shadow-cyan-400/10 bg-gradient-to-b from-black to-gray-900">
-          <ScatterChartComponent />
+          <ClientScatter />
         </div>
       </div>
     </div>
