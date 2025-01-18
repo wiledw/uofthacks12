@@ -34,6 +34,12 @@ const questions = [
     id: 5,
     question: "What is your greatest accomplishment?",
     maxWords: 500
+  },
+  {
+    id: 6,
+    question: "Share your social media handles.",
+    maxWords: 50,
+    isSocialMedia: true // Add this flag to identify social media section
   }
 ]
 
@@ -70,6 +76,10 @@ export default function SurveyForm() {
     const [answers, setAnswers] = useState<{ [key: number]: string }>({})
     const [direction, setDirection] = useState(0)
     const [showLogout, setShowLogout] = useState(false)
+    const [socialMedia, setSocialMedia] = useState({
+        instagram: '',
+        discord: ''
+    });
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>{error.message}</div>;
@@ -102,6 +112,13 @@ export default function SurveyForm() {
         [currentQuestion]: value
         }))
     }
+
+    const handleSocialMediaChange = (field: 'instagram' | 'discord', value: string) => {
+        setSocialMedia(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
 
     const countWords = (text: string) => {
         return text.trim().split(/\s+/).filter(word => word.length > 0).length
@@ -152,53 +169,81 @@ export default function SurveyForm() {
                     </div>
                  </div>
 
-                <AnimatePresence mode="wait">
-                <motion.div
-                    key={currentQuestion}
-                    initial={{ 
-                    x: direction * 50,
-                    opacity: 0 
-                    }}
-                    animate={{ 
-                    x: 0,
-                    opacity: 1 
-                    }}
-                    exit={{ 
-                    x: direction * -50,
-                    opacity: 0 
-                    }}
-                    transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30
-                    }}
-                    className="space-y-4"
-                >
-                    <h2 className="text-xl font-semibold text-gray-900">
-                        {questions[currentQuestion].question}
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                        (max {questions[currentQuestion].maxWords} words)
-                    </p>
+                 <AnimatePresence mode="wait">
                     <motion.div
-                            variants={textareaVariants}
-                            whileHover="hover"
-                            className="relative"
-                     >
-                        <Textarea
-                        value={currentAnswer}
-                        onChange={(e) => handleAnswerChange(e.target.value)}
-                        placeholder="Type your answer here..."
-                        className="min-h-[200px] resize-none"
-                        />
+                        key={currentQuestion}
+                        initial={{ x: direction * 50, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: direction * -50, opacity: 0 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30
+                        }}
+                        className="space-y-4"
+                    >
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            {questions[currentQuestion].question}
+                        </h2>
+
+                        {currentQuestion === 5 ? (
+                            // Social Media Fields
+                            <div className="space-y-6">
+                                {/* Instagram Field */}
+                                <div className="space-y-2">
+                                    <label className="text-gray-700 font-medium">Instagram</label>
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-gray-500">instagram.com/</span>
+                                        <input
+                                            type="text"
+                                            value={socialMedia.instagram}
+                                            onChange={(e) => handleSocialMediaChange('instagram', e.target.value)}
+                                            className="flex-1 p-2 border border-gray-200 rounded-lg 
+                                            focus:ring-2 focus:ring-blue-100 focus:border-blue-400 
+                                            outline-none transition-all duration-200 text-gray-700"
+                                            placeholder="username"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Discord Field */}
+                                <div className="space-y-2">
+                                    <label className="text-gray-700 font-medium">Discord ID</label>
+                                    <input
+                                        type="text"
+                                        value={socialMedia.discord}
+                                        onChange={(e) => handleSocialMediaChange('discord', e.target.value)}
+                                        className="w-full p-2 border border-gray-200 rounded-lg 
+                                        focus:ring-2 focus:ring-blue-100 focus:border-blue-400 
+                                        outline-none transition-all duration-200 text-gray-700"
+                                        placeholder="username#0000"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            // Regular Question Fields
+                            <>
+                                <motion.div
+                                    variants={textareaVariants}
+                                    whileHover="hover"
+                                    className="relative"
+                                >
+                                    <Textarea
+                                        value={currentAnswer}
+                                        onChange={(e) => handleAnswerChange(e.target.value)}
+                                        placeholder="Type your answer here..."
+                                        className="min-h-[200px] resize-none"
+                                    />
+                                </motion.div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className={`${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
+                                        {wordCount} / {questions[currentQuestion].maxWords} words
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </motion.div>
-                    <div className="flex justify-between items-center text-sm">
-                        <span className={`${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                            {wordCount} / {questions[currentQuestion].maxWords} words
-                        </span>
-                    </div>
-                </motion.div>
-            </AnimatePresence>
+                </AnimatePresence>
 
             <div className="flex justify-between mt-8">
                 <motion.div

@@ -47,6 +47,11 @@ export default function ProfilePage() {
         5: "Previous answer 5",
     });
     const [editedAnswers, setEditedAnswers] = useState<{ [key: number]: string }>(answers);
+    const [socialInfo, setSocialInfo] = useState({
+        instagram: "your.username", // Default or from database
+        discord: "username#1234"    // Default or from database
+    });
+    const [editedSocialInfo, setEditedSocialInfo] = useState(socialInfo);
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>{error.message}</div>;
@@ -67,9 +72,18 @@ export default function ProfilePage() {
         }));
     };
 
+    const handleSocialChange = (field: 'instagram' | 'discord', value: string) => {
+        setEditedSocialInfo(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+
     const handleSubmit = async () => {
         // Here you would typically make an API call to update all answers
         setAnswers(editedAnswers);
+        setSocialInfo(editedSocialInfo);
         setIsEditing(false);
         // Add API call to save all updated answers
     };
@@ -77,6 +91,7 @@ export default function ProfilePage() {
     const handleCancel = () => {
         setIsEditing(false);
         setEditedAnswers(answers);
+        setEditedSocialInfo(socialInfo);
     };
 
     return (
@@ -112,20 +127,64 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* Survey Answers Section */}
-                    <div>
+                    {/* Social Media Section - New */}
+                    <div className="mb-8 border-b border-gray-100 pb-8">
                         <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-xl font-semibold text-gray-800">Your Survey Answers</h2>
+                            <h2 className="text-xl font-semibold text-gray-800">Your Information</h2>
                             {!isEditing && (
                                 <button
                                     onClick={handleEdit}
                                     className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 
                                     transition-colors duration-200 font-medium text-sm"
                                 >
-                                    Edit Answers
+                                    Edit Profile
                                 </button>
                             )}
                         </div>
+                        <div className="space-y-4">
+                            {/* Instagram Field */}
+                            <div className="space-y-2">
+                                <label className="text-gray-700 font-medium">Instagram</label>
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-gray-500">instagram.com/</span>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editedSocialInfo.instagram}
+                                            onChange={(e) => handleSocialChange('instagram', e.target.value)}
+                                            className="flex-1 p-2 border border-gray-200 rounded-lg 
+                                            focus:ring-2 focus:ring-blue-100 focus:border-blue-400 
+                                            outline-none transition-all duration-200 text-gray-700"
+                                            placeholder="username"
+                                        />
+                                    ) : (
+                                        <span className="text-gray-600">{socialInfo.instagram}</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Discord Field */}
+                            <div className="space-y-2">
+                                <label className="text-gray-700 font-medium">Discord ID</label>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editedSocialInfo.discord}
+                                        onChange={(e) => handleSocialChange('discord', e.target.value)}
+                                        className="w-full p-2 border border-gray-200 rounded-lg 
+                                        focus:ring-2 focus:ring-blue-100 focus:border-blue-400 
+                                        outline-none transition-all duration-200 text-gray-700"
+                                        placeholder="username#0000"
+                                    />
+                                ) : (
+                                    <p className="text-gray-600">{socialInfo.discord}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Survey Answers Section */}
+                    <div>
                         <div className="space-y-8">
                             {questions.map((q) => (
                                 <div key={q.id} className="space-y-3">
@@ -150,6 +209,10 @@ export default function ProfilePage() {
                                 </div>
                             ))}
                         </div>
+
+                        
+                        {/* Questions and Answers remain the same */}
+                        
                         {isEditing && (
                             <div className="mt-8 flex justify-center space-x-4">
                                 <button
