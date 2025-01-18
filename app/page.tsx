@@ -13,7 +13,7 @@ const smoothTransition = {
 }
 
 export default function Home() {
-  const { user, error, isLoading } = useUser();
+  const { user, error } = useUser();
   const [stage, setStage] = useState(0);
   const router = useRouter();
 
@@ -31,24 +31,9 @@ export default function Home() {
     }
   }, [user, router]);
 
-  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
-  // const handleLogout = () => {
-  //   window.location.href = `/api/auth/logout`;
-  // };
 
-  // if (user) {
-  //   return (
-  //     <div>
-  //       Welcome {user.name}! {user.email}
-  //       <button onClick={handleLogout}>Logout</button>
-  //       {user.picture && (
-  //         <Image src={user.picture} width={40} height={40} alt="" />
-  //       )}
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
