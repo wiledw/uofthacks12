@@ -70,7 +70,8 @@ const ScatterChartComponent = () => {
           {
             x: data.map((d) => d.x),
             y: data.map((d) => d.y),
-            mode: "markers+text",
+            mode: "text+markers" as const,
+            type:'scatter',
             marker: {
               size: 30,
               color: "rgba(0, 255, 255, 0.6)",
@@ -82,8 +83,8 @@ const ScatterChartComponent = () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             text: data.map((d) => "👤"),
-            textposition: "center",
-            hoverinfo: "none",
+            textposition: "middle center" as const,
+            hoverinfo: "none" as const,
           }
         ]}
         layout={{
