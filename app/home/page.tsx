@@ -47,7 +47,7 @@ export default function HomePage() {
               />
             )}
             {showMenu && (
-            <div className="absolute mt-2 right-0 z-10 w-36 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+            <div className="absolute mt-2 right-0 z-50 w-36 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
             <Button
                 variant="ghost"
                 className="w-full justify-start px-4 py-2 text-sm text-gray-700 hover:bg-cyan-50 
