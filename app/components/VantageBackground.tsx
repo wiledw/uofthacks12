@@ -6,8 +6,12 @@ interface VantaBackgroundProps {
   children: React.ReactNode;
 }
 
+interface VantaEffect {
+  destroy: () => void;
+}
+
 const VantaBackground = ({ children }: VantaBackgroundProps) => {
-  const [vantaEffect, setVantaEffect] = useState<any>(null);
+  const [vantaEffect, setVantaEffect] = useState<VantaEffect | null>(null);
   const vantaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
