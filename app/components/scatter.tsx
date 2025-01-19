@@ -259,7 +259,12 @@ const ScatterChartComponent = () => {
                     width={24}
                     height={24}
                   />
-                  <span>{selectedUser.email}</span>
+                  <a 
+                      href={`mailto:${selectedUser.email}`}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
+                    {selectedUser.email}
+                  </a>
                 </div>
 
                 <div className="flex items-center space-x-3 text-gray-300">
