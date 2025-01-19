@@ -3,8 +3,10 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useCheckUser } from '../hooks/useCheckUser';
+import LoadingScreen from '../components/loadingScreen';
 
 const questions = [
   {
@@ -35,7 +37,8 @@ const questions = [
 ];
 
 export default function ProfilePage() {
-    const { user, error, isLoading } = useUser();
+    const { isLoading: checkUserLoading } = useCheckUser();
+    const { user, error, isLoading: authLoading } = useUser();
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [answers, setAnswers] = useState<{ [key: number]: string }>({
@@ -52,8 +55,62 @@ export default function ProfilePage() {
         discord: "username#1234"    // Default or from database
     });
     const [editedSocialInfo, setEditedSocialInfo] = useState(socialInfo);
+    const [isDataLoading, setIsDataLoading] = useState(true);
 
-    if (isLoading) return <div>Loading...</div>;
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) return;
+    
+            try {
+                const response = await fetch(`/api/check-user?userId=${user.sub}`);
+                const { data } = await response.json();
+    
+                if (user?.sub && data?.results && data.results[user.sub]) {
+                    const userData = data.results[user.sub];
+                    const fullText = userData.text || '';
+                    const answerMap: { [key: number]: string } = {};
+                    
+                    questions.forEach((q) => {
+                        const questionStart = fullText.indexOf(`Question: ${q.question}`);
+                        if (questionStart !== -1) {
+                            const answerStart = fullText.indexOf('Answer: ', questionStart) + 8;
+                            const answerEnd = fullText.indexOf('Question: ', answerStart);
+                            const answer = answerEnd === -1 
+                                ? fullText.slice(answerStart).trim()
+                                : fullText.slice(answerStart, answerEnd).trim();
+                            answerMap[q.id] = answer;
+                        }
+                    });
+    
+                    setAnswers(answerMap);
+                    setEditedAnswers(answerMap);
+    
+                    // Extract username from full Instagram URL
+                    const instagramUsername = userData.social1
+                        ? userData.social1.replace('https://www.instagram.com/', '')
+                        : '';
+    
+                    setSocialInfo({
+                        instagram: instagramUsername,
+                        discord: userData.social2 || ''
+                    });
+                    setEditedSocialInfo({
+                        instagram: instagramUsername,
+                        discord: userData.social2 || ''
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            } finally {
+                setIsDataLoading(false);
+            }
+        };
+    
+        fetchUserData();
+    }, [user]);
+    
+
+    if (checkUserLoading || authLoading || isDataLoading) return <LoadingScreen />;
     if (error) return <div>{error.message}</div>;
     if (!user) {
         router.push('/');
@@ -80,13 +137,42 @@ export default function ProfilePage() {
     };
 
 
-    const handleSubmit = async () => {
-        // Here you would typically make an API call to update all answers
+    
+const handleSubmit = async () => {
+    try {
+        const fullText = questions.map((q) => {
+            return `Question: ${q.question} Answer: ${editedAnswers[q.id] || ''}`
+        }).join(' ');
+
+        const formData = {
+            user_id: user.sub,
+            name: user.name,
+            email: user.email,
+            text: fullText,
+            social1: `https://www.instagram.com/${editedSocialInfo.instagram}`, // Full Instagram URL
+            social2: editedSocialInfo.discord
+        };
+
+        const response = await fetch('/api/submit-survey', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update profile');
+        }
+
         setAnswers(editedAnswers);
         setSocialInfo(editedSocialInfo);
         setIsEditing(false);
-        // Add API call to save all updated answers
-    };
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        // You might want to show an error message to the user here
+    }
+};
 
     const handleCancel = () => {
         setIsEditing(false);

@@ -6,13 +6,16 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import ClientScatter from '@/app/components/clientScatter'
+import { useCheckUser } from '../hooks/useCheckUser'
+import LoadingScreen from '../components/loadingScreen'
 
 export default function HomePage() {
   const router = useRouter();
-  const {user, error, isLoading} = useUser();
-  const [showMenu, setShowMenu] = useState(false)
+  const [showMenu, setShowMenu] = useState(false);
+  const { isLoading } = useCheckUser();
+  const { user, error, isLoading: authLoading } = useUser();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading || authLoading) return <LoadingScreen />;
   if (error) return <div>{error.message}</div>;
   if (!user) {
     router.push('/');

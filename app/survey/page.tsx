@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import LoadingScreen from '../components/loadingScreen'
 
 const questions = [
   {
@@ -81,7 +82,28 @@ export default function SurveyForm() {
         discord: ''
     });
 
-    if (isLoading) return <div>Loading...</div>;
+    useEffect(() => {
+        const checkUser = async () => {
+          if (!user) return;
+    
+          try {
+            const response = await fetch(`/api/check-user?userId=${user.sub}`);
+            const data = await response.json();
+            console.log(data);
+            if (data.exists && Object.keys(data.data.results).length !== 0) { 
+                router.push('/home');
+            }
+          } catch (error) {
+            console.error('Error checking user:', error);
+          }
+        };
+    
+        if (!isLoading) {
+          checkUser();
+        }
+      }, [user, isLoading, router]);
+
+    if (isLoading) return <LoadingScreen />;
     if (error) return <div>{error.message}</div>;
     if (!user) {
         router.push('/');
@@ -119,6 +141,46 @@ export default function SurveyForm() {
             [field]: value
         }));
     };
+
+    const handleSubmit = async () => {
+        try {
+          const fullText = questions.map((q, index) => {
+            if (index === 5) return '';
+            return `Question: ${q.question} Answer: ${answers[index] || ''}`
+          }).filter(text => text).join(' ');
+      
+          const formData = {
+            user_id: user.sub,
+            name: user.name,
+            email: user.email,
+            text: fullText,
+            social1: `https://www.instagram.com/${socialMedia.instagram}`,
+            social2: socialMedia.discord
+          };
+      
+          const response = await fetch('/api/submit-survey', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+      
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to submit survey');
+          }
+      
+          // Show success message or redirect
+          router.push('/home');
+      
+        } catch (error) {
+          console.error('Error submitting survey:', error);
+          // Show error message to user
+        }
+      };
+      
+      
 
     const countWords = (text: string) => {
         return text.trim().split(/\s+/).filter(word => word.length > 0).length
@@ -268,8 +330,8 @@ export default function SurveyForm() {
                     whileTap="tap"
                 >
                     <Button
-                        onClick={handleNext}
-                        disabled={currentQuestion === questions.length - 1 || isOverLimit}
+                        onClick={currentQuestion === questions.length - 1 ? handleSubmit : handleNext}
+                        disabled={isOverLimit}
                         className="transition-colors duration-200"
                     >
                         {currentQuestion === questions.length - 1 ? 'Submit' : 'Next'}
