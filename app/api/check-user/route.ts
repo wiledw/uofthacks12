@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
   }
   try {
-    const response = await fetch(`https://6fc0-138-51-79-90.ngrok-free.app/find_document?userId=${userId}`);
+    const response = await fetch(`https://93c3-138-51-77-185.ngrok-free.app/find_document?userId=${userId}`);
     const data = await response.json();
     
     return NextResponse.json({
