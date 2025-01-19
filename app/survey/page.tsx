@@ -227,7 +227,7 @@ export default function SurveyForm() {
                 </div>
             </div>
 
-            <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <div className="w-full max-w-2xl bg-white bg-opacity-80 rounded-lg shadow-lg p-6 md:p-8 backdrop-blur-sm">
                 <div className="mb-8">
                     <div className="h-1 w-full bg-gray-200 rounded-full">
                         <div 
