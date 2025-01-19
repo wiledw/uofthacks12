@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const data = await req.json();
 
     // Make request to your backend/database
-    const response = await fetch('https://93c3-138-51-77-185.ngrok-free.app/add_document', {
+    const response = await fetch('https://7503-199-7-156-226.ngrok-free.app/add_document', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

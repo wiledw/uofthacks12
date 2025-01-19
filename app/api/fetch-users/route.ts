@@ -11,14 +11,14 @@ export async function GET(request: Request) {
 
   try {
     // Fetch embeddings data
-    const embeddingsResponse = await fetch(`https://93c3-138-51-77-185.ngrok-free.app/query?userId=${userId}`);
+    const embeddingsResponse = await fetch(`https://7503-199-7-156-226.ngrok-free.app/query?userId=${userId}`);
     const embeddingsData = await embeddingsResponse.json();
     console.log('this is data ', embeddingsData)
     
     const transformedData = await Promise.all(
         embeddingsData.labels.map(async (label: string, index: number) => {
           try {
-            const userResponse = await fetch(`https://93c3-138-51-77-185.ngrok-free.app/find_document?userId=${label}`);
+            const userResponse = await fetch(`https://7503-199-7-156-226.ngrok-free.app/find_document?userId=${label}`);
             const userDetails = await userResponse.json();
             const userData = userDetails.results[label];
       
