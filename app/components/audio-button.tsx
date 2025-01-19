@@ -26,12 +26,12 @@ export function AudioButton() {
 
   return (
     <Button
-      onClick={toggleAudio}
-      variant="ghost"
-      size="icon"
-      className="fixed top-4 right-4 z-[9999] bg-black/10 hover:bg-black/20 backdrop-blur-sm rounded-full p-2"
-      aria-label={isPlaying ? "Mute background audio" : "Play background audio"}
-    >
+  onClick={toggleAudio}
+  variant="ghost"
+  size="icon"
+  className="fixed top-20 right-6 z-[9999] bg-black/10 hover:bg-black/20 backdrop-blur-sm rounded-full p-2" // Changed top-4 to top-20
+  aria-label={isPlaying ? "Mute background audio" : "Play background audio"}
+>
       {isPlaying ? (
         <Volume2 className="h-6 w-6 text-white" />
       ) : (

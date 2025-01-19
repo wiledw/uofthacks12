@@ -106,31 +106,29 @@ const ScatterChartComponent = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRelayout = (eventData: any) => {
-    // Get the current ranges
-    const xRange = eventData['xaxis.range[0]'] !== undefined ? 
-      [eventData['xaxis.range[0]'], eventData['xaxis.range[1]']] : undefined;
-    const yRange = eventData['yaxis.range[0]'] !== undefined ? 
-      [eventData['yaxis.range[0]'], eventData['yaxis.range[1]']] : undefined;
+    // Check if eventData exists and has the required properties
+    if (!eventData) return;
   
-    // If we have a selected user, center the view on their coordinates
-    if (selectedUser) {
-      const xSpan = xRange ? xRange[1] - xRange[0] : 2;
-      const ySpan = yRange ? yRange[1] - yRange[0] : 2;
-      
-      setPlotLayout({
-        'xaxis.range[0]': selectedUser.x - xSpan/2,
-        'xaxis.range[1]': selectedUser.x + xSpan/2,
-        'yaxis.range[0]': selectedUser.y - ySpan/2,
-        'yaxis.range[1]': selectedUser.y + ySpan/2,
-      });
-    } else {
-      // If no user is selected, use the normal ranges
-      setPlotLayout({
-        'xaxis.range[0]': eventData['xaxis.range[0]'],
-        'xaxis.range[1]': eventData['xaxis.range[1]'],
-        'yaxis.range[0]': eventData['yaxis.range[0]'],
-        'yaxis.range[1]': eventData['yaxis.range[1]'],
-      });
+    try {
+      const newLayout: PlotLayout = {};
+  
+      // Safely get the ranges
+      if (eventData['xaxis.range[0]'] !== undefined && eventData['xaxis.range[1]'] !== undefined) {
+        newLayout['xaxis.range[0]'] = eventData['xaxis.range[0]'];
+        newLayout['xaxis.range[1]'] = eventData['xaxis.range[1]'];
+      }
+  
+      if (eventData['yaxis.range[0]'] !== undefined && eventData['yaxis.range[1]'] !== undefined) {
+        newLayout['yaxis.range[0]'] = eventData['yaxis.range[0]'];
+        newLayout['yaxis.range[1]'] = eventData['yaxis.range[1]'];
+      }
+  
+      // Only update if we have valid ranges
+      if (Object.keys(newLayout).length > 0) {
+        setPlotLayout(newLayout);
+      }
+    } catch (error) {
+      console.error('Error in handleRelayout:', error);
     }
   };
 
