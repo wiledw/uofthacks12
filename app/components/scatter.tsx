@@ -1,68 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
-import { RotateCw } from 'lucide-react'; 
+import { RotateCw } from 'lucide-react';
+
+interface UserData {
+  x: number;
+  y: number;
+  name: string;
+  email: string;
+  instagram: string;
+  discord: string;
+}
 
 const ScatterChartComponent = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [key, setKey] = useState(0); 
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [data, setData] = useState<UserData[]>([]);
+  const [key, setKey] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const data = [
-    {
-      x: 10,
-      y: 20,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      instagram: "https://www.instagram.com/alice.codes",
-      discord: "alice#1234",
-    },
-    {
-      x: 15,
-      y: 35,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      instagram: "https://www.instagram.com/bob.developer",
-      discord: "bob#5678",
-    },
-    {
-      x: 30,
-      y: 25,
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      instagram: "https://www.instagram.com/wil_edw",
-      discord: "charlie#9012",
-    },
-    // ... other data points
-  ];
-
-  const getInstagramUsername = (url: string) => {
-    return url.split('instagram.com/')[1];
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/fetch-users?userId=google-oauth2|112302726238919361918');
+      const fetchedData = await response.json();
+      console.log('Fetched data:', fetchedData);
+      setData(fetchedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlePointClick = (event: any) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const getInstagramUsername = (url: string) => {
+    return url.split('instagram.com/')[1] || url;
+  };
+
+  const handlePointClick = (event: {points: Array<{pointIndex: number}>}) => {
     if (event.points && event.points[0]) {
       const pointIndex = event.points[0].pointIndex;
       setSelectedUser(data[pointIndex]);
     }
   };
 
-   const handleRefresh = () => {
-    setKey(prev => prev + 1); // Force re-render of the plot
+  const handleRefresh = () => {
+    setKey(prev => prev + 1);
+    fetchData();
   };
 
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
+  }
 
   return (
     <div className="relative bg-transparent p-4">
-        <button
-            onClick={handleRefresh}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full
-            bg-black border border-cyan-400/30 text-cyan-400 
-            hover:bg-cyan-950/50 hover:text-cyan-300 
-            transition-all duration-200 shadow-lg"
-            >
-                <RotateCw className="w-5 h-5" />
-        </button>
+      <button
+        onClick={handleRefresh}
+        className="absolute top-4 right-4 z-10 p-2 rounded-full
+        bg-black border border-cyan-400/30 text-cyan-400 
+        hover:bg-cyan-950/50 hover:text-cyan-300 
+        transition-all duration-200 shadow-lg"
+      >
+        <RotateCw className="w-5 h-5" />
+      </button>
 
       <Plot
         key={key}
@@ -71,7 +74,7 @@ const ScatterChartComponent = () => {
             x: data.map((d) => d.x),
             y: data.map((d) => d.y),
             mode: "text+markers" as const,
-            type:'scatter',
+            type: 'scatter',
             marker: {
               size: 30,
               color: "rgba(0, 255, 255, 0.6)",
@@ -81,8 +84,7 @@ const ScatterChartComponent = () => {
                 width: 2,
               },
             },
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            text: data.map((d) => "👤"),
+            text: data.map(() => "👤"),
             textposition: "middle center" as const,
             hoverinfo: "none" as const,
           }
@@ -148,7 +150,6 @@ const ScatterChartComponent = () => {
             {/* User Info */}
             <div className="space-y-4">
               <div className="text-center mb-6">
-                <div className="text-5xl mb-4">{selectedUser.avatar}</div>
                 <h2 className="text-2xl font-bold text-white">{selectedUser.name}</h2>
               </div>
 
