@@ -222,7 +222,7 @@ export default function SurveyForm() {
                         </Button>
                     )}
                     </div>
-                        <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}!</h1>
+                        <h1 className="text-2xl font-bold text-white">Welcome, {user.name}!</h1>
                     </div>
                 </div>
             </div>
