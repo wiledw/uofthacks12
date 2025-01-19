@@ -7,9 +7,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const smoothTransition = {
-  type: "tween",
-  ease: "easeInOut",
-  duration: 0.7
+  type: "spring",
+  stiffness: 100,
+  damping: 20
+}
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: smoothTransition
 }
 
 export default function Home() {
@@ -33,41 +40,65 @@ export default function Home() {
 
   if (error) return <div>{error.message}</div>;
 
-
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
-      <motion.div 
-        layout
-        transition={smoothTransition}
-        className="flex flex-col items-center"
-      >
-        <AnimatePresence mode="wait">
-          {stage === 0 && (
-            <motion.h1
-              key="hello"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={smoothTransition}
-              className="text-5xl font-bold mb-8"
-            >
-              Hello World
-            </motion.h1>
-          )}
-          {stage >= 1 && (
-            <motion.h1
-              key="perceptr"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                ...smoothTransition,
-                delay: stage === 1 ? 0.3 : 0
-              }}
-              className="text-6xl font-bold mb-8"
-            >
-              <div className='flex flex-col items-center gap-8'>
-                Perceptr
+      <AnimatePresence mode="wait">
+        {stage >= 1 && (
+          <motion.div
+            key="logo"
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{ ...smoothTransition, delay: 0.2 }}
+            className="logo mb-8"
+          >
+            <div className="logo-image" />
+          </motion.div>
+        )}
+        {stage === 0 && (
+          <motion.h1
+            key="hello"
+            {...fadeInUp}
+            className="text-5xl font-bold mb-8"
+          >
+            Hello World
+          </motion.h1>
+        )}
+        {stage >= 1 && (
+          <motion.div
+            key="perceptr"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={smoothTransition}
+            className="flex flex-col items-center"
+          >
+            <div className="flex items-baseline">
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...smoothTransition, delay: 0.3 }}
+                className="text-6xl font-bold"
+              >
+                Percept
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...smoothTransition, delay: 0.8 }}
+                className="text-6xl font-bold"
+                style={{ color: '#0059cc' }}
+              >
+                r
+              </motion.span>
+            </div>
+            {stage >= 2 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...smoothTransition, delay: 1 }}
+                className="mt-8"
+              >
                 <Link href="/api/auth/login?prompt=login">
                   <Button 
                     variant="outline" 
@@ -77,11 +108,12 @@ export default function Home() {
                     Let&apos;s get started
                   </Button>
                 </Link>
-              </div>
-            </motion.h1>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
