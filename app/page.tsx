@@ -56,7 +56,7 @@ export default function Home() {
               transition={smoothTransition}
               className="text-5xl font-bold mb-8"
             >
-              Hello World
+              Hi there :)
             </motion.h1>
           )}
           {stage >= 1 && (

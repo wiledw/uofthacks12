@@ -9,6 +9,11 @@ import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import LoadingScreen from '../components/loadingScreen'
+import dynamic from 'next/dynamic';
+
+const DynamicVantaBackground = dynamic(() => import('../components/VantageBackground'), {
+  ssr: false
+});
 
 const questions = [
   {
@@ -191,7 +196,8 @@ export default function SurveyForm() {
     const isOverLimit = wordCount > questions[currentQuestion].maxWords
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+        <DynamicVantaBackground>
+        <div className="min-h-screen flex flex-col items-center justify-center">
             <div className="w-full max-w-2xl mx-auto mb-6  p-4">
                 <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -341,6 +347,7 @@ export default function SurveyForm() {
             </div>
         </div>
     </div>
+    </DynamicVantaBackground>
   )
 }
 
