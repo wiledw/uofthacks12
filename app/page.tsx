@@ -77,6 +77,10 @@ export default function Home() {
                     variant="outline" 
                     size="lg"
                     className="text-lg px-6 py-3 rounded-full bg-white text-black hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => {
+                      const audio = new Audio('../uofthacks_st.mp3');
+                      audio.play();
+                    }}
                   >
                     Let&apos;s get started
                   </Button>
