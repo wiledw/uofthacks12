@@ -17,7 +17,7 @@ const VantaBackground = ({ children }: VantaBackgroundProps) => {
   useEffect(() => {
     const loadVanta = async () => {
       if (!vantaEffect) {
-        // @ts-expect-error
+        // @ts-expect-error/omasdgoiajfs
         const NET = (await import('vanta/dist/vanta.net.min')).default;
         setVantaEffect(
           NET({
