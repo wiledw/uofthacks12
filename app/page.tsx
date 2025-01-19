@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const DynamicVantaBackground = dynamic(() => import('./components/VantageBackground'), {
+  ssr: false
+});
 
 const smoothTransition = {
   type: "tween",
@@ -33,10 +38,9 @@ export default function Home() {
 
   if (error) return <div>{error.message}</div>;
 
-
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
+    <DynamicVantaBackground>
+    <div className="flex flex-col items-center justify-center min-h-screen text-white overflow-hidden">
       <motion.div 
         layout
         transition={smoothTransition}
@@ -83,5 +87,6 @@ export default function Home() {
         </AnimatePresence>
       </motion.div>
     </div>
+    </DynamicVantaBackground>
   );
 }
