@@ -1,6 +1,5 @@
 'use client'
-
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import { Geist, Azeret_Mono as Geist_Mono } from 'next/font/google';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import "./globals.css";
