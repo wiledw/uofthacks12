@@ -298,7 +298,6 @@ const handleSubmit = async () => {
 
                         
                         {/* Questions and Answers remain the same */}
-                        
                         {isEditing && (
                             <div className="mt-8 flex justify-center space-x-4">
                                 <button

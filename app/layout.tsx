@@ -42,7 +42,6 @@ export default function RootLayout({
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <AudioButton />
           {children}
-          {children}
           {!isChatroom && (
             <Link 
               href="/chat" 
